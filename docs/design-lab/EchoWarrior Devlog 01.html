@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EchoWarrior Devlog #1 — the road to v0.10.4 · shisaku</title>
+<link rel="icon" href="assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="bluesix.css" />
+<script>
+  (function () {
+    var k = 'shisaku-theme', s = localStorage.getItem(k);
+    var t = s || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+</head>
+<body>
+<header class="site-head">
+  <div class="site-head-in">
+    <a class="brand" href="bluesix devlog.html">
+      <img src="assets/bluesix-mark.png" alt="shisaku" />
+      <span class="name">shisaku<span class="path"> ~/devlog</span></span>
+    </a>
+    <nav class="site-nav">
+      <span class="links">
+        <a href="bluesix devlog.html">latest</a>
+        <a href="#">tags</a>
+        <a href="#">rss</a>
+        <a href="#">about</a>
+      </span>
+      <button class="toggle" id="themeBtn" aria-label="Toggle dark mode" title="Toggle theme">
+        <svg class="ico moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="ico sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap post">
+  <a class="back" href="bluesix devlog.html">← all posts</a>
+
+  <div class="post-head">
+    <div class="post-meta">
+      <span>June 24, 2026</span>
+      <span class="sep">·</span>
+      <span class="badge">v0.10.4</span>
+      <span class="sep">·</span>
+      <span>~12 min read</span>
+    </div>
+    <h1 class="post-title">EchoWarrior Devlog #1 — the road to v0.10.4</h1>
+    <p class="post-dek">
+      2.5 weeks from first commit. 140 commits, a playable prototype, a full narrative framework,
+      and an architecture designed from the ground up to be taken apart by anyone with a text editor.
+      This is the story of how that happened.
+    </p>
+    <div class="post-tags">
+      <span class="tag">+rust</span>
+      <span class="tag">+macroquad</span>
+      <span class="tag">+lua-5.4</span>
+      <span class="tag">+gamedev</span>
+    </div>
+  </div>
+
+  <article class="post-body">
+    <h2>Who Made This</h2>
+    <p>I'm a young neurologist from Germany. By day I map neural pathways and study how the brain constructs its sense of self — where memory lives, what happens when the internal critic gets too loud, how trauma reshapes perception. By night (and between nappy changes), I build a video game about a decommissioned consciousness archive whose archived minds leak out as monsters.</p>
+    <p>I have a daughter. She's too young to play it yet. But this game is partly for her: a world she can open up, take apart, and rebuild however she wants. A place where boundaries are permeable and transformation is possible. Also she thinks the slime enemy is funny, which is its own kind of validation.</p>
+    <p>EchoWarrior started as a side project — something to keep the Rust muscles flexed between hospital shifts. It became a 2.5-week sprint that produced 140 commits, a playable prototype, a full narrative framework, and an architecture designed from the ground up to be taken apart by anyone with a text editor.</p>
+
+    <h2>What Is EchoWarrior?</h2>
+    <p>EchoWarrior is a Rust-native top-down 2D survivors-like game with a gothic dark-fantasy soul. On the surface it looks like Vampire Survivors in a ruined cathedral: move with WASD, auto-attack the nearest enemy, collect XP gems, level up, snowball into spectacle. But beneath that familiar loop lives something stranger.</p>
+    <p>The enemies are not random monsters — they are <strong>psychological archetypes</strong> drawn from the unconscious: the repressed impulse (Shadow), the internalised critic (Judge), the false persona (Trickster), the bottomless hunger (Devourer). Every wave is a curriculum. Every kill is an integration.</p>
+    <p>The world is not a neutral arena — it is a <strong>decommissioned consciousness archive</strong>, a gargantuan server complex built three centuries ago to preserve dying minds. The minds inside began to <em>respond</em> — not with gratitude, but with demand. What leaked out was everything they had refused to face while alive.</p>
+    <p>This is the game's core tension: a survivors-like power fantasy wrapped around a story about the cost of becoming permeable to what you've avoided.</p>
+    <p>I did not plan this thematic coherence. It emerged because I spend my professional life thinking about what happens when the brain's filtering mechanisms break down, and it turns out that maps directly onto game design. The Shadow archetype is what neurologists call a disinhibited impulse circuit. The Judge is an overactive prefrontal feedback loop. The Trickster is a pattern-completion error that feels like insight. I did not design these as clinical analogies — I designed them as enemies. The fact that they map back to real neuroscience is just me showing my work.</p>
+
+    <h2>Phase 1: The Skeleton (June 8)</h2>
+    <p>The project started the way most Rust game prototypes start: an <code>Initial commit of assets</code> followed immediately by a design document, a <code>Cargo.toml</code>, and a <code>main.rs</code> that opened a window.</p>
+    <p>The first commit was just assets — pixel-art spritesheets, a grass tileset, a player sprite, a skeleton enemy, a slime. No code. Just the raw material. This turned out to be a good instinct: having visual content from day one meant every technical milestone was immediately playable and visible.</p>
+    <p>The next day brought the first playable loop:</p>
+    <ul>
+      <li>A character moved around a tiled arena</li>
+      <li>Enemies spawned and drifted toward the player</li>
+      <li>Auto-attacks fired at the nearest target</li>
+      <li>XP gems dropped on kill and magnetised toward the player</li>
+      <li>Leveling paused the game and presented upgrade cards</li>
+    </ul>
+    <p>All of this in about 900 lines of Rust, using Macroquad for the window, input, and rendering. The code was a single flat module — no data files, no ECS, no scripting. Just hardcoded arrays and <code>match</code> statements.</p>
+    <p>A sprite cutter tool followed quickly (<code>src/bin/sprite_cutter.rs</code>), because manually slicing 288×480 spritesheets into 48×48 frames is not a sustainable workflow. The tool read TOML metadata describing frame grids, row-to-animation mappings, and FPS hints, then wrote individual PNGs. This established a pattern that would define the entire project: <strong>metadata-driven asset pipelines</strong>.</p>
+
+    <h3>Design decision: Macroquad, not Bevy</h3>
+    <p>Why Macroquad? Speed. Bevy's compile times, ECS boilerplate, and asset pipeline overhead would have slowed the feedback loop during the critical first week. Macroquad gave us a window, a render loop, input, audio, and text in a single <code>use macroquad::*</code> — no build scripts, no proc-macro-heavy framework. The trade-off was accepting a less structured codebase, which we solved by keeping pure game logic in <code>src/game/</code> and Macroquad-specific code in <code>src/runtime/</code>, with a hard import boundary between them. That separation survived every refactor since.</p>
+    <p>Also: I only get about 90 minutes of coding time after my daughter goes to sleep. I cannot afford a framework that spends 45 of those minutes compiling. Macroquad's compile times are short enough that I can actually ship something before I collapse.</p>
+
+    <h2>Phase 2: Architecture Takes Shape (June 8–12)</h2>
+    <p>The prototype grew rapidly, and the flat-file approach started to creak. The solution was a modular split that is still in place today:</p>
+    <pre><code><span class="cmt">src/lib.rs</span>          → pub mod declarations (game, data, runtime, ui, save, scripting, logging)
+<span class="cmt">src/main.rs</span>         → macroquad entry → runtime::run()
+<span class="cmt">src/game/</span>           → renderer-agnostic logic (combat, enemies, player, dialogue, ECS)
+<span class="cmt">src/data/</span>           → serde structs + load_* for every TOML data file
+<span class="cmt">src/runtime/</span>        → Macroquad-specific loop, rendering, input, audio
+<span class="cmt">src/ui/</span>             → renderer-agnostic layout + draw helpers
+<span class="cmt">src/save/</span>           → progression + autosave persistence
+<span class="cmt">src/scripting/</span>      → Lua 5.4 via mlua</code></pre>
+    <p>This architecture made one promise: <strong>you can change the game without touching Rust</strong>. Every stat, spawn curve, upgrade, UI colour, shader manifest, dialogue line, and weather preset lives in <code>Assets/Data/*.toml</code> or <code>Assets/Dialogue/*.yaml</code>. A modder with a text editor can rewrite the entire game by swapping the <code>Assets/</code> directory.</p>
+    <p>The data-driven shift happened in a single intense day (June 12). Before that, player stats were hardcoded in <code>actors.rs</code>. After, everything came from TOML:</p>
+    <ul>
+      <li><code>Assets/Data/player.toml</code> → <code>PlayerConfig</code></li>
+      <li><code>Assets/Data/enemies.toml</code> → <code>HashMap&lt;String, EnemyDef&gt;</code></li>
+      <li><code>Assets/Data/spawn.toml</code> → <code>SpawnConfig</code></li>
+      <li><code>Assets/Data/upgrades.toml</code> → <code>Vec&lt;UpgradeDef&gt;</code></li>
+      <li><code>Assets/Data/theme.toml</code> → <code>UiTheme</code> (with hot-reload!)</li>
+      <li><code>Assets/Data/shaders.toml</code> → runtime shader manifest</li>
+    </ul>
+    <p>Every loader degrades gracefully. A missing or malformed file prints to stderr and falls back to hardcoded defaults. The game never crashes on bad data — a policy born from the recognition that modders will make mistakes, and the game should help them debug, not punish them. Also from the recognition that <em>I</em> will make mistakes, usually at 1 AM with a baby monitor on.</p>
+
+    <h3>The Lua gamble</h3>
+    <p>Rust-powered modding usually means embedding Python or JavaScript. We tried <code>rustpython-vm</code> first. Windows 11 AppLocker killed it — OS error 4551, build scripts blocked.</p>
+    <p>Enter <code>mlua</code> with Lua 5.4 vendored. Lua compiles as a C library with no build scripts — it just works. The trade-off is a less familiar scripting language for many developers, but Lua's simplicity (one table, one function, one string type, no classes) turned out to be an advantage for modders who don't want to learn Rust.</p>
+    <p>The spawn system demonstrates the pattern:</p>
+    <pre><code><span class="cmt">-- Assets/Scripts/spawn.lua</span>
+<span class="kw">function</span> spawn_wave(ctx)
+    <span class="kw">if</span> ctx.run_seconds &lt; 60 <span class="kw">then</span>
+        echo_warrior.spawn_enemy(<span class="str">"ShadowLurker"</span>, ctx.player_x + 200, ctx.player_y)
+    <span class="kw">elseif</span> ctx.run_seconds &lt; 180 <span class="kw">then</span>
+        echo_warrior.spawn_enemy(<span class="str">"ShadeHound"</span>, ctx.player_x + 300, ctx.player_y)
+    <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+    <p>The <code>ctx</code> table exposes run state, player stats, XP progress, world dimensions, and spawn config — everything a modder needs to write adaptive wave logic. Hot-reload polls file mtimes every frame; changes take effect within one second without restarting the game.</p>
+    <p>Additive layers live in <code>spawn.d/*.lua</code>, letting multiple mods each register hooks without overwriting each other:</p>
+    <pre><code>echo_warrior.on_spawn_wave(<span class="str">"my_mod_waves"</span>, <span class="kw">function</span>(ctx)
+    <span class="cmt">-- append extra spawns</span>
+<span class="kw">end</span>)</code></pre>
+
+    <h2>Phase 3: The Story Emerges (June 12–14)</h2>
+    <p>Between the architecture work came a curious thing: the game started telling a story where none was planned.</p>
+    <p>The design document had always described the enemy archetypes in psychological terms (Shadow, Judge, Trickster, Devourer). But during a late-night writing session — one of those rare nights where my daughter actually slept through — the setting crystallised. The Splintered Garden was not a magical place. It was a <strong>decommissioned consciousness archive</strong>. A vast, cathedral-scale server complex built to preserve dying minds. The enemies were not monsters. They were the archived material the minds could not process while alive.</p>
+    <p>This unlocked the narrative framework documented in <code>PCS.md</code>. The characters:</p>
+    <ul>
+      <li><strong>Echo</strong> — the player, carrying an echo field (a resonance emitter) they built during a previous visit they no longer remember. The arrival without memory is not amnesia. It is a decision they no longer remember making.</li>
+      <li><strong>Leere</strong> — the NPC who greets Echo at the threshold. Leere is not a person. Leere is the facility's original curator AI, a maintenance system so old its social subroutines have developed something indistinguishable from weariness. The inability to leave is not loyalty. It is a hard constraint in the original build.</li>
+      <li><strong>Eve</strong> — a companion encountered standing in a doorway Echo has no record of. Eve is the last successful partial upload — a woman named Aveline Voss who compressed herself into a state small enough to exist in the archive's margins without being consumed.</li>
+    </ul>
+    <p>The story has three endings:</p>
+    <ul>
+      <li><strong>The Closed Ending</strong> — Echo disables the echo field, the archive falls silent</li>
+      <li><strong>The Open Ending</strong> — Echo consents to broadcast three centuries of archived consciousness outward</li>
+      <li><strong>The Corruption Ending</strong> — Echo hesitates at the threshold and is overwritten</li>
+    </ul>
+    <p>This narrative depth is unusual for a survivors-like game, and it shapes every design decision. The enemy archetypes are not interchangeable — each one teaches the player something about the world and about themselves. The combat design doc (<code>Docs/COMBAT_LEVELING.md</code>) calls this "uniquely learned moves": repeatable, build-specific tactical behaviors that the player internalises over time, like knowing how to dash through a marked enemy to fork arrows into the rear line, or timing a guard into an incoming curse to convert punishment into retaliation.</p>
+    <p>The consciousness archive framing is not accidental. I spend my clinical days watching people process things their brains have walled off. The Shadow Lurker is the impulse they refused to examine. The Penitent Bell is the critical voice that stopped sounding like theirs. The game lets you fight these things, dissolve them, and feel heavier afterwards. That is the gameplay equivalent of what therapy feels like, and I did not realise I was building that until the third draft of the design document. Sometimes your subconscious writes better code than your conscious self.</p>
+
+    <h2>Phase 4: The Modding Turn (June 14–15)</h2>
+    <p>Around v0.7.0, the project's direction shifted fundamentally. The question became: <strong>what if someone wants to turn EchoWarrior into a completely different game?</strong></p>
+    <p>This "modding is the point" philosophy drove the next wave. I want my daughter to be able to open this game when she's old enough and change <em>anything</em> — turn enemies into cats, replace the soundtrack with her own recordings, rewrite the entire story, turn the Splintered Garden into a space station. Not because she has to, but because she <em>can</em>. A game that cannot be reshaped by its players is a lecture. A game that invites reshaping is a conversation.</p>
+    <ul>
+      <li><strong>Dynamic enemy identity</strong>: <code>EnemyRuntime</code> reads stats, sprites, and frame metadata from <code>enemies.toml</code>. Adding a new enemy kind requires zero Rust code — just a TOML entry and a Lua spawn command. Unknown enemy ids from Lua are logged as warnings and skipped gracefully.</li>
+      <li><strong>Asset packaging</strong>: The <code>asset_pack</code> CLI discovers used assets, encodes them into EchoWarrior's internal format, writes <code>data.pak</code>, and optionally encrypts with a repo-root key. The packer auto-discovers <code>Assets/Data</code>, <code>Assets/Metadata</code>, <code>Assets/Scripts/**/*.lua</code>, and <code>Assets/Dialogue/*.yaml</code> without editing <code>asset_pack.rs</code>. Every change is verified with <code>--dry-run --list</code>.</li>
+      <li><strong>Mod validation tool</strong> (<code>cargo run --bin mod_check</code>): Parses all TOML, YAML, and Lua entry points, validates id uniqueness and cross-references, reports section-by-section with ✓/⚠/✗ glyphs. Exit code 1 on errors. Documented in <code>Docs/MODDING.md</code> as the first troubleshooting step for modders.</li>
+      <li><strong>Modded profile system</strong>: The start screen has a "Play Modded" toggle that persists across sessions. Vanilla and modded autosaves are separate files. Saves carry mod manifest metadata and custom TOML namespaces.</li>
+      <li><strong>Maximum GUI moddability</strong>: Start-screen labels, HUD diagnostics, game-over strings moved into <code>ui.toml</code>. Theme colours already hot-reloadable. The roadmap has every visible label, panel title, layout number, font size, and colour value coming from data.</li>
+    </ul>
+
+    <h2>Phase 5: Combat Feel (Ongoing)</h2>
+    <p>A survivors-like game sinks or swims on juice. The past week focused on making every hit read:</p>
+    <ul>
+      <li><strong>Enemy hit flash</strong>: White semi-transparent overlay on <code>take_damage</code>, 0.1s timer. Instant hit confirmation.</li>
+      <li><strong>Screen shake</strong>: Scales 2–8 px with damage, decays over 0.25s. Toggleable in settings.</li>
+      <li><strong>Floating damage numbers</strong>: <code>DamageNumberFx</code> in a <code>ParticlePool</code> with gravity, bounce, colour coding by damage kind.</li>
+      <li><strong>XP bar smooth animation</strong>: <code>displayed_xp</code> lerps toward actual at 3× speed per frame.</li>
+      <li><strong>Pickup magnet acceleration</strong>: Speed scales 1×→3× as gems close in.</li>
+      <li><strong>Level-up card slide-in</strong>: Cubic ease-out over 0.25s with 0.05s stagger between cards.</li>
+    </ul>
+    <p>The level-up card system, meanwhile, grew from a simple hardcoded stat boost into a role-aware, data-driven upgrade engine: 9 upgrades in <code>upgrades.toml</code>, no-duplicate enforcement, scoring that considers your current build (orb cards prepend when you have none, HP cards appear when you're low), and rarity-based styling (coloured glows, badges, corner ornaments).</p>
+
+    <h2>Phase 6: NPCs and Companions (June 14)</h2>
+    <p>The companion system arrived as the answer to a narrative problem: Echo cannot be alone in this world. The game has named NPCs (Eve, Helena, Sophia, Siegfried, Enid), each with YAML dialogue files, cooldown-based abilities defined in <code>abilities.toml</code>, and shader-driven visual effects (ward, snare, lance, burst, pulse, chain, void).</p>
+    <p>Companion AI uses A* pathfinding through a renderer-agnostic navigation grid (<code>src/game/navgrid.rs</code>), with moddable formations defined in <code>companions.toml</code>. When idle, companions hold a randomised formation ring around the player. When enemies are near, they switch to role-based engagement (melee close in, ranged hold back, skirmishers mid-range).</p>
+    <p>The NPC ability system is deliberately moddable: adding a new ability means writing a new entry in <code>abilities.toml</code>, optionally pairing it with a GLSL shader in <code>shaders/</code>, and assigning it to an NPC's loadout. No Rust code required.</p>
+    <p>I think the companion system is also, in some unexamined way, about what it means to be responsible for people who follow you. But that is a therapy conversation, not a devlog.</p>
+
+    <h2>Technical Statistics</h2>
+    <div class="stat-grid">
+      <div class="cell"><div class="num">~140</div><div class="lbl">commits over 2.5 weeks</div></div>
+      <div class="cell"><div class="num">119</div><div class="lbl">passing tests (1 ignored)</div></div>
+      <div class="cell"><div class="num">v0.10.4</div><div class="lbl">current version</div></div>
+      <div class="cell"><div class="num">0</div><div class="lbl">hardcoded stat values in runtime code</div></div>
+    </div>
+    <ul>
+      <li><strong>9</strong> renderer-agnostic game modules, <strong>14</strong> runtime modules, <strong>5</strong> UI modules, <strong>6</strong> data modules</li>
+      <li><strong>1</strong> binary crate (the game), <strong>1</strong> library crate (all game logic), <strong>3</strong> auxiliary binaries (<code>sprite_cutter</code>, <code>asset_pack</code>, <code>mod_check</code>)</li>
+      <li><strong>Lua 5.4</strong> via mlua (vendored), compiled as C with no build scripts</li>
+    </ul>
+
+    <h2>What's Next</h2>
+    <p>The immediate roadmap (Priority 1 in <code>TODO.md</code>) is <strong>full-control modding</strong>:</p>
+    <ol>
+      <li><strong>General Lua event hooks</strong> — <code>on_run_start</code>, <code>on_enemy_killed</code>, <code>on_player_hit</code>, <code>on_level_up_offer</code>, <code>on_upgrade_picked</code>. A single <code>echo_warrior.on()</code> API for all events.</li>
+      <li><strong>Shared data/Lua effect model</strong> — upgrades, abilities, and Lua commands all use the same schema for stat effects, conditions, and targeting.</li>
+      <li><strong>Mod pack layout</strong> — <code>Mods/&lt;mod_id&gt;/mod.toml</code> with metadata, versioning, and content namespace support.</li>
+      <li><strong>Scene TOML files</strong> — fence positions, garden beds, and prop placement extracted from hardcoded Rust into data.</li>
+      <li><strong>Audio persistence</strong> — save audio settings, add lazy-loading for non-core SFX, build dynamic music crossfade rules.</li>
+    </ol>
+    <p>Beyond that: the full 60-level account skill tree, 8 archetypes and full enemy roster, legendary item powers, evolutionary weapon chains, stages 2–6, endless mode, and eventually co-op.</p>
+
+    <h2>Lessons So Far</h2>
+    <p><strong>Macroquad was the right call.</strong> It got us to a playable prototype in hours instead of days. The renderer-agnostic module boundary (<code>src/game/</code> never imports Macroquad) means we can swap the renderer later if we outgrow it, but we've been able to keep the runtime performant by optimising hot paths in <code>src/runtime/</code> without touching game logic.</p>
+    <p><strong>Data-driven saves time.</strong> Every hour spent building TOML loaders and graceful fallbacks saved ten hours of recompiling to tweak numbers. The current workflow is: edit TOML, save, watch the game pick it up within a second. No restart, no recompile. This matters a lot when your coding sessions are measured in baby-monitor battery life.</p>
+    <p><strong>Lua was worth the complexity budget.</strong> The spawn scripting system lets us iterate on wave design 20× faster than hardcoded Rust. The additive hook system means modders can extend waves without touching the base script. The hot-reload cycles faster than the compiler.</p>
+    <p><strong>Story can coexist with systems.</strong> The narrative in <code>PCS.md</code> is not bolted on — it emerged from the same design thinking that produced the archetype system and the data architecture. The protagonists are data (Eve is a compressed consciousness, Leere is a curator AI), the enemies are data (unprocessed psychological material), and the player's progression is data (the echo field is a broadcast device). The game systems and the story are metaphors for each other.</p>
+    <p><strong>Parenting and game development have the same UX principles.</strong> Graceful degradation (when the baby doesn't sleep, you still function, just at reduced capacity). Hot-reload (you adapt to new information within seconds). Data-driven architecture (every child is different and you cannot hardcode your approach). I am only half-joking.</p>
+
+    <div class="aside-note">
+      <span class="label">A note to my future daughter</span>
+      <p style="margin:0 0 14px;">If you are reading this years from now, old enough to understand it: this game is for you. Not because I expect you to love it, but because I built it in a way that you can break it open and make it your own. Change the sprites. Rewrite the story in Lua. Replace the music with the stuff you actually listen to. If you want to turn the Splintered Garden into a coffee shop simulator, the architecture should say <em>yes</em> before you even finish typing.</p>
+      <p style="margin:0 0 14px;">The world is already full of things that tell you how they work and expect you to follow the manual. I wanted to give you a world that asks what <em>you</em> want to do with it.</p>
+      <p style="margin:0;">Now go integrate some shadows.</p>
+    </div>
+  </article>
+
+  <div class="post-foot">
+    <div class="reader-notes">
+      <p>If you're reading this as a <em>modder</em>: every value in the game is yours to change in <code>Assets/</code>. Run <code>cargo run --bin mod_check</code> to validate your edits.</p>
+      <p>If you're reading this as a <em>developer</em>: the codebase is open, modular, and designed to be understood one module at a time. Start with <code>Docs/AI_CONTEXT.md</code>.</p>
+      <p>If you're reading this as a <em>player</em>: the game is early, but the world is already alive. Every run teaches you something about the Splintered Garden — and about what you're willing to carry.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="site-foot">
+  <div class="site-foot-in">
+    <a href="#">feed.xml</a>
+    <span class="dot">·</span>
+    <a href="#">github/shisaku</a>
+    <span class="dot">·</span>
+    <span>built in the open</span>
+    <span class="spacer"></span>
+    <a href="bluesix devlog.html">← back to devlog</a>
+  </div>
+</footer>
+
+<script>
+  var KEY = 'shisaku-theme', root = document.documentElement;
+  var sys = matchMedia('(prefers-color-scheme: dark)');
+  sys.addEventListener('change', function (e) { if (!localStorage.getItem(KEY)) root.setAttribute('data-theme', e.matches ? 'dark' : 'light'); });
+  document.getElementById('themeBtn').addEventListener('click', function () {
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem(KEY, next);
+  });
+</script>
+</body>
+</html>
