@@ -1,0 +1,180 @@
+/*
+  The CSS in this style tag is based off of Bear Blog's default CSS.
+  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
+  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
+ */
+
+:root {
+	color-scheme: light dark;
+	--bg: #fdfbf7;
+	--surface: #edebe6;
+	--surface-2: #d8d6cf;
+	--text: #111216;
+	--muted: #5e6168;
+	--border: #d8d6cf;
+	--primary: #30406d;
+	--primary-strong: #5b73c9;
+	--accent: #90a0f8;
+	--accent-soft: #c5d9f8;
+	--accent-warm: #7c66d8;
+	--focus-ring: color-mix(in srgb, var(--primary-strong) 42%, transparent);
+	--box-shadow:
+		0 2px 8px color-mix(in srgb, var(--text) 8%, transparent),
+		0 16px 36px color-mix(in srgb, var(--primary) 16%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bg: #111216;
+		--surface: #202226;
+		--surface-2: #323438;
+		--text: #fdfbf7;
+		--muted: #a6a7a7;
+		--border: #323438;
+		--primary: #5b73c9;
+		--primary-strong: #30406d;
+		--accent: #90a0f8;
+		--accent-soft: #a8d1f6;
+		--accent-warm: #7c66d8;
+		--focus-ring: color-mix(in srgb, var(--accent) 48%, transparent);
+	}
+}
+
+html {
+	background: var(--bg);
+}
+
+::selection {
+	background: color-mix(in srgb, var(--accent-soft) 64%, transparent);
+	color: var(--text);
+}
+
+body {
+	font-family: var(--font-atkinson);
+	margin: 0;
+	padding: 0;
+	text-align: left;
+	background:
+		radial-gradient(
+			circle at top left,
+			color-mix(in srgb, var(--accent-soft) 18%, transparent),
+			transparent 32rem
+		),
+		linear-gradient(180deg, color-mix(in srgb, var(--surface) 62%, transparent), var(--bg) 28rem);
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	color: var(--text);
+	font-size: 20px;
+	line-height: 1.7;
+	min-height: 100vh;
+}
+main {
+	width: 720px;
+	max-width: calc(100% - 2em);
+	margin: auto;
+	padding: 3em 1em;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0 0 0.5rem 0;
+	color: var(--text);
+	line-height: 1.2;
+}
+h1 {
+	font-size: 3.052em;
+}
+h2 {
+	font-size: 2.441em;
+}
+h3 {
+	font-size: 1.953em;
+}
+h4 {
+	font-size: 1.563em;
+}
+h5 {
+	font-size: 1.25em;
+}
+strong,
+b {
+	font-weight: 700;
+}
+a {
+	color: var(--primary);
+	text-underline-offset: 0.16em;
+}
+a:hover {
+	color: var(--primary-strong);
+}
+p {
+	margin-bottom: 1em;
+}
+.prose p {
+	margin-bottom: 2em;
+}
+textarea {
+	width: 100%;
+	font-size: 16px;
+}
+input {
+	font-size: 16px;
+}
+table {
+	width: 100%;
+}
+img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 8px;
+}
+code {
+	padding: 2px 5px;
+	background-color: var(--surface);
+	border-radius: 2px;
+}
+pre {
+	padding: 1.5em;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+}
+pre > code {
+	all: unset;
+}
+blockquote {
+	border-left: 4px solid var(--accent-warm);
+	padding: 0 0 0 20px;
+	margin: 0;
+	color: var(--muted);
+	font-size: 1.333em;
+}
+hr {
+	border: none;
+	border-top: 1px solid var(--border);
+}
+@media (max-width: 720px) {
+	body {
+		font-size: 18px;
+	}
+	main {
+		padding: 1em;
+	}
+}
+
+.sr-only {
+	border: 0;
+	padding: 0;
+	margin: 0;
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	clip: rect(1px 1px 1px 1px);
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	white-space: nowrap;
+}

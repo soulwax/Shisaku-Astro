@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+	<rect width="1200" height="630" fill="#111216"/>
+	<circle cx="230" cy="190" r="120" fill="#A8D1F6" opacity=".85"/>
+	<circle cx="310" cy="210" r="100" fill="#5B73C9" opacity=".78"/>
+	<circle cx="180" cy="250" r="78" fill="#7C66D8" opacity=".72"/>
+	<circle cx="260" cy="268" r="8" fill="#FDFBF7"/>
+	<text x="150" y="435" fill="#FDFBF7" font-family="Arial, Helvetica, sans-serif" font-size="132" font-weight="700">shisaku</text>
+	<text x="158" y="500" fill="#A6A7A7" font-family="Arial, Helvetica, sans-serif" font-size="34">Experiments, notes, and shipped little ideas.</text>
+</svg>

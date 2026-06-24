@@ -1,0 +1,87 @@
+---
+import { SITE_TITLE } from '../consts';
+import HeaderLink from './HeaderLink.astro';
+---
+
+<header>
+	<nav>
+		<a class="brand" href="/" aria-label={`${SITE_TITLE} home`}>
+			<span class="brand-mark" aria-hidden="true">
+				<img src="/bluesix-dev-symbol.png" alt="" />
+			</span>
+			<span>{SITE_TITLE}</span>
+		</a>
+		<div class="internal-links">
+			<HeaderLink href="/">Home</HeaderLink>
+			<HeaderLink href="/blog">Blog</HeaderLink>
+			<HeaderLink href="/about">About</HeaderLink>
+		</div>
+	</nav>
+</header>
+<style>
+	header {
+		margin: 0;
+		padding: 0 1em;
+		background: color-mix(in srgb, var(--surface) 92%, transparent);
+		border-bottom: 1px solid var(--border);
+		backdrop-filter: blur(18px);
+		position: sticky;
+		top: 0;
+		z-index: 10;
+	}
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.75rem;
+		color: var(--text);
+		font-size: 1rem;
+		font-weight: 700;
+		letter-spacing: 0;
+		text-decoration: none;
+	}
+	.brand-mark {
+		display: inline-flex;
+		align-items: center;
+		width: 32px;
+		height: 32px;
+	}
+	.brand-mark img {
+		display: block;
+		width: 32px;
+		height: auto;
+		border-radius: 0;
+	}
+	nav {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		max-width: 1120px;
+		margin: 0 auto;
+	}
+	nav a {
+		padding: 1em 0.5em;
+		color: var(--text);
+		border-bottom: 3px solid transparent;
+		text-decoration: none;
+	}
+	nav a:hover {
+		color: var(--primary);
+	}
+	nav a.active {
+		text-decoration: none;
+		border-bottom-color: var(--primary);
+		color: var(--primary);
+	}
+	@media (max-width: 720px) {
+		header {
+			padding: 0 0.75em;
+		}
+		.brand span {
+			display: none;
+		}
+		nav a {
+			padding-inline: 0.35em;
+		}
+	}
+</style>
