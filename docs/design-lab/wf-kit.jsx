@@ -1,7 +1,7 @@
 // wf-kit.jsx — shared low-fi wireframe primitives for the bluesix devlog explorations.
 // Exports to window: Lines, Ph, Chip, Anno, Logo.
 
-// A stack of grey placeholder text bars. `widths` is an array of % strings.
+// A stack of grey wireframe text bars. `widths` is an array of % strings.
 function Lines({ widths = ['100%', '92%', '70%'], gap = 7, h = 9 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap }}>
@@ -12,7 +12,7 @@ function Lines({ widths = ['100%', '92%', '70%'], gap = 7, h = 9 }) {
   );
 }
 
-// Placeholder image / media box with a hatched fill and a mono caption.
+// Wireframe image / media box with a hatched fill and a mono caption.
 function Ph({ label = 'image', h = 160, style = {} }) {
   return (
     <div className="wf-ph" style={{ height: h, ...style }}>

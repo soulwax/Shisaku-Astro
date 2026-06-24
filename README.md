@@ -16,7 +16,7 @@ An Astro-powered, database-backed devlog for experiments, notes, and shipped lit
 | `pnpm run build` | Build the Vercel serverless output |
 | `pnpm run db:generate` | Generate a Drizzle migration |
 | `pnpm run db:migrate` | Apply migrations with the direct PostgreSQL connection |
-| `pnpm run seed:posts` | Idempotently seed the original starter posts |
+| `pnpm run seed:posts` | Idempotently seed the EchoWarrior devlog posts |
 
 ## Project Structure
 
@@ -37,8 +37,8 @@ drizzle.config.ts
 package.json
 ```
 
-Static assets live in `public/`. Published and draft posts live in Neon Postgres. The original
-starter entries are retained in `scripts/seed-content/` as migration inputs.
+Static assets live in `public/`. Published and draft posts live in Neon Postgres. The
+EchoWarrior devlog entries are retained in `scripts/seed-content/` as migration inputs.
 
 Local environment variables are loaded from `.env.local`, falling back to `../Shisaku/.env`.
 Vercel deployments use encrypted project environment variables. GitHub OAuth is restricted to
