@@ -13,7 +13,7 @@ const createRenderer = async () => {
 
 	renderer.use(
 		await markdownItShiki({
-			langs: ['bash', 'css', 'html', 'javascript', 'json', 'markdown', 'rust', 'toml', 'typescript', 'yaml'],
+			langs: ['bash', 'css', 'html', 'javascript', 'json', 'lua', 'markdown', 'rust', 'toml', 'typescript', 'yaml'],
 			themes: {
 				light: 'github-light',
 				dark: 'github-dark',
