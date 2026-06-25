@@ -71,12 +71,14 @@ export const GET: APIRoute = async ({ cookies, redirect, url }) => {
 		fetch('https://api.github.com/user/emails', { headers: githubHeaders }),
 	]);
 
-	if (!identityResponse.ok || !emailsResponse.ok) {
+	if (!identityResponse.ok) {
 		return fail('GitHub profile lookup failed.');
 	}
 
 	const identity = (await identityResponse.json()) as GitHubIdentity;
-	const emails = (await emailsResponse.json()) as GitHubEmail[];
+	const emails = emailsResponse.ok
+		? ((await emailsResponse.json()) as GitHubEmail[])
+		: [];
 	const email =
 		selectVerifiedGitHubEmail(emails, identity.email) ??
 		`${identity.login.toLowerCase()}@github.local`;
