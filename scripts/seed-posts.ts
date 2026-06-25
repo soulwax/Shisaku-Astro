@@ -1,21 +1,11 @@
-import { config } from 'dotenv';
 import { inArray } from 'drizzle-orm';
 import matter from 'gray-matter';
 import { readdir, readFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
 import { basename, extname, resolve } from 'node:path';
+import { loadLocalEnv } from './load-local-env.mjs';
 
 const projectRoot = process.cwd();
-const localEnvPath = resolve(projectRoot, '.env.local');
-const shisakuEnvPath = resolve(projectRoot, '../Shisaku/.env');
-
-if (existsSync(shisakuEnvPath)) {
-	config({ path: shisakuEnvPath, quiet: true });
-}
-
-if (existsSync(localEnvPath)) {
-	config({ path: localEnvPath, quiet: true, override: false });
-}
+loadLocalEnv({ root: projectRoot });
 
 const { closeDatabase } = await import('../src/db/client');
 const { db } = await import('../src/db/client');

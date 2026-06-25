@@ -1,9 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { config } from 'dotenv';
-import { resolve } from 'node:path';
+import { loadLocalEnv } from '../scripts/load-local-env.mjs';
 
-config({ path: resolve(process.cwd(), '../Shisaku/.env') });
+loadLocalEnv();
 
 test(
 	'Redis sessions can be created, read, and deleted',

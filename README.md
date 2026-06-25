@@ -40,7 +40,7 @@ package.json
 Static assets live in `public/`. Published and draft posts live in Neon Postgres. The
 EchoWarrior devlog entries are retained in `scripts/seed-content/` as migration inputs.
 
-Local environment variables are loaded from `.env.local`, falling back to `../Shisaku/.env`.
+Local environment variables are loaded from `.env.local`, with `.env` as an optional fallback.
 Vercel deployments use encrypted project environment variables. GitHub OAuth is restricted to
 the `soulwax` account and a verified `users.noreply.github.com` email address.
 

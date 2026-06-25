@@ -8,7 +8,7 @@
 
 Two outcomes, delivered as two phases:
 
-1. **Restyle** — port Shisaku's terminal/mono visual language into the Astro site, with Shisaku as the source of truth.
+1. **Restyle** — port the archived Shisaku terminal/mono visual language into the Astro site, with `docs/design-lab/` retained as the local source reference.
 2. **CMS** — turn the static, content-collection blog into an SSR app where the authorized shisaku administrator authors posts through a WYSIWYG editor, with posts and credentials stored in Neon Postgres via Drizzle.
 
 Phase 1 ships independently of Phase 2.
@@ -18,7 +18,7 @@ Phase 1 ships independently of Phase 2.
 | Area | Decision |
 | --- | --- |
 | Post storage | Database rows (full CMS), not markdown files. SSR rendering. |
-| Database | Neon Postgres via Drizzle ORM. Conn strings in `./Shisaku/.env` (`DATABASE_URL` pooled for runtime, `DATABASE_URL_UNPOOLED` for migrations). |
+| Database | Neon Postgres via Drizzle ORM. Conn strings live in this app's local env files (`DATABASE_URL` pooled for runtime, `DATABASE_URL_UNPOOLED` for migrations). |
 | Sessions | Redis (`REDIS_URL` from the same `.env`), TTL-native. |
 | Host / adapter | `@astrojs/node` standalone. The configured custom Neon hostname does not expose Neon's derived HTTP endpoint, so Drizzle uses pooled direct PostgreSQL transport at runtime. |
 | Auth | GitHub OAuth only (`github.com`). Only the GitHub username `soulwax` is authorized as admin. The returned GitHub account email must use a GitHub email suffix (for example GitHub's noreply suffix) before an admin session is created. Hand-rolled sessions remain random-token/httpOnly-cookie based. No public signup. |
@@ -35,7 +35,7 @@ Self-contained, still static, still building from the existing markdown. Visuall
 
 ### Changes
 
-- **Global stylesheet:** Adopt `Shisaku/bluesix.css` as `src/styles/global.css` (source of truth), replacing the Bear-Blog-derived styles. Delete conflicting component-scoped styles.
+- **Global stylesheet:** Adopt `docs/design-lab/bluesix.css` as `src/styles/global.css` (local design reference), replacing the Bear-Blog-derived styles. Delete conflicting component-scoped styles.
 - **Fonts:** Replace Atkinson (`fontProviders.local()`) with **Spline Sans Mono** (`--mono`) and **IBM Plex Sans** (`--sans`) via Astro's fonts API (Google provider), wired to the CSS variables `bluesix.css` already references. Remove the Atkinson woff assets.
 - **Theme:** Add a manual dark/light toggle that writes `data-theme` and persists to `localStorage`, following system preference on first visit (Shisaku behavior). Replaces the `prefers-color-scheme`-only approach. Inline the no-flash theme script in `<head>`.
 - **Markup → Shisaku class structure:**
@@ -44,7 +44,7 @@ Self-contained, still static, still building from the existing markdown. Visuall
   - `BlogPost.astro` → `.post` / `.back` / `.post-head` (meta, title, dek, tags) / `.post-body` with `##`/`###` heading prefixes, custom list markers, code styling, blockquote/`.aside-note`, `.stat-grid`, `.post-foot` reader-notes.
   - `Footer.astro` → `.site-foot`.
   - Shared `.badge` component for build-number badges.
-- **Layout width:** match Shisaku's `.wrap` (max-width 720px) rather than the current mixed 960/1120px.
+- **Layout width:** match the archived design's `.wrap` (max-width 720px) rather than the current mixed 960/1120px.
 
 ### Out of scope for Phase 1
 
@@ -57,7 +57,7 @@ No data changes; posts still load from content collections until Phase 2.
 - `astro.config.mjs`: `output: 'server'`, `adapter: node({ mode: 'standalone' })`.
 - Add: `@astrojs/node`, `drizzle-orm`, `drizzle-kit`, `postgres`, `markdown-it`, `@shikijs/markdown-it`, `sanitize-html`, `@milkdown/crepe`, a Redis client (`ioredis`), `dotenv`.
 - Remove: `@astrojs/mdx`, `src/content.config.ts`, `src/content/blog/`.
-- Env loading: load `../Shisaku/.env` explicitly (via `dotenv` with an explicit path) in `astro.config.mjs`, `drizzle.config.ts`, and the server entry, since the file lives outside the Astro project root.
+- Env loading: load this app's `.env.local` and optional `.env` through `scripts/load-local-env.mjs` for local scripts, tests, and config.
 
 ### Data model (Drizzle / Neon Postgres)
 
@@ -114,6 +114,6 @@ Image/file uploads & object storage, comments, tags as first-class entities, sch
 
 ## Risks / notes
 
-- `.env` lives in `Shisaku/`, outside the Astro root — env loading must point there explicitly; secrets stay out of the repo.
+- Local env files live inside the Astro root and remain ignored by git; secrets stay out of the repo.
 - Dropping content collections removes build-time frontmatter type-checking; the Drizzle schema + Action input validation replace it.
 - Edge/serverless hosts are not a target (Redis + Node adapter assume a persistent Node runtime). Revisit the session store if that changes.
