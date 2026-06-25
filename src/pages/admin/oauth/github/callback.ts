@@ -73,9 +73,11 @@ export const GET: APIRoute = async ({ cookies, redirect, url }) => {
 
 	const identity = (await identityResponse.json()) as GitHubIdentity;
 	const emails = (await emailsResponse.json()) as GitHubEmail[];
-	const email = selectVerifiedGitHubEmail(emails, identity.email);
+	const email =
+		selectVerifiedGitHubEmail(emails, identity.email) ??
+		`${identity.login.toLowerCase()}@github.local`;
 
-	if (!isAllowedGitHubIdentity(identity, email)) {
+	if (!isAllowedGitHubIdentity(identity)) {
 		return fail('This GitHub account is not authorized for shisaku admin.');
 	}
 
@@ -85,7 +87,7 @@ export const GET: APIRoute = async ({ cookies, redirect, url }) => {
 		.values({
 			githubId: String(identity.id),
 			username: identity.login.toLowerCase(),
-			email: email!,
+			email,
 			role: 'admin',
 			lastLoginAt: now,
 		})
@@ -93,7 +95,7 @@ export const GET: APIRoute = async ({ cookies, redirect, url }) => {
 			target: users.githubId,
 			set: {
 				username: identity.login.toLowerCase(),
-				email: email!,
+				email,
 				role: 'admin',
 				lastLoginAt: now,
 			},

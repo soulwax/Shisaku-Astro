@@ -42,12 +42,13 @@ EchoWarrior devlog entries are retained in `scripts/seed-content/` as migration 
 
 Local environment variables are loaded from `.env.local`, with `.env` as an optional fallback.
 Vercel deployments use encrypted project environment variables. GitHub OAuth is restricted to
-the `soulwax` account and a verified `users.noreply.github.com` email address.
+the GitHub account `github.com/soulwax`.
 
-The GitHub OAuth app callback URL is:
+The GitHub OAuth app settings should use:
 
 ```text
-https://shisaku.dev/admin/oauth/github/callback
+Homepage URL: https://shisaku.dev
+Authorization callback URL: https://shisaku.dev/admin/oauth/github/callback
 ```
 
 For a fresh environment, run `pnpm run db:migrate` followed by `pnpm run seed:posts`.
@@ -62,11 +63,10 @@ DATABASE_URL_UNPOOLED
 REDIS_URL
 GITHUB_CLIENT_ID
 GITHUB_CLIENT_SECRET
-GITHUB_ALLOWED_EMAIL_SUFFIX
 ```
 
-Set `GITHUB_ALLOWED_EMAIL_SUFFIX` to `users.noreply.github.com`. Apply database migrations before
-promoting a deployment. The GitHub OAuth callback must remain the production URL shown above.
+Apply database migrations before promoting a deployment. The GitHub OAuth callback must remain
+the production URL shown above.
 
 From this linked project directory, set or update secrets with:
 
@@ -76,7 +76,6 @@ vercel env add DATABASE_URL_UNPOOLED production preview development
 vercel env add REDIS_URL production preview development
 vercel env add GITHUB_CLIENT_ID production preview development
 vercel env add GITHUB_CLIENT_SECRET production preview development
-vercel env add GITHUB_ALLOWED_EMAIL_SUFFIX production preview development
 ```
 
 Then pull local Vercel variables when needed:

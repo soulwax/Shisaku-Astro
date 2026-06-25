@@ -1,5 +1,3 @@
-import { getEnv } from '../env';
-
 export const ADMIN_GITHUB_USERNAME = 'soulwax';
 
 export interface GitHubIdentity {
@@ -15,25 +13,10 @@ export interface GitHubEmail {
 	visibility: string | null;
 }
 
-export const getAllowedGitHubEmailSuffix = () =>
-	getEnv('GITHUB_ALLOWED_EMAIL_SUFFIX', 'users.noreply.github.com')
-		.trim()
-		.toLowerCase()
-		.replace(/^@/, '');
-
 export const isAllowedGitHubIdentity = (
 	identity: Pick<GitHubIdentity, 'login'>,
-	email: string | null,
 ): boolean => {
-	if (identity.login.toLowerCase() !== ADMIN_GITHUB_USERNAME) {
-		return false;
-	}
-
-	if (!email) {
-		return false;
-	}
-
-	return email.toLowerCase().endsWith(`@${getAllowedGitHubEmailSuffix()}`);
+	return identity.login.toLowerCase() === ADMIN_GITHUB_USERNAME;
 };
 
 export const isAuthorizedAdminUser = (user: {
@@ -42,17 +25,13 @@ export const isAuthorizedAdminUser = (user: {
 	role: string;
 }): boolean =>
 	user.role === 'admin' &&
-	isAllowedGitHubIdentity({ login: user.username }, user.email);
+	isAllowedGitHubIdentity({ login: user.username });
 
 export const selectVerifiedGitHubEmail = (
 	emails: GitHubEmail[],
-	_profileEmail: string | null,
+	profileEmail: string | null,
 ): string | null => {
-	const allowedVerified = emails.filter(
-		(email) =>
-			email.verified &&
-			email.email.toLowerCase().endsWith(`@${getAllowedGitHubEmailSuffix()}`),
-	);
+	const verified = emails.filter((email) => email.verified);
 
-	return allowedVerified.find((email) => email.primary)?.email ?? allowedVerified[0]?.email ?? null;
+	return verified.find((email) => email.primary)?.email ?? verified[0]?.email ?? profileEmail;
 };

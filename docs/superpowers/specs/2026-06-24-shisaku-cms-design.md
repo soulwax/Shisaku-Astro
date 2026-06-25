@@ -21,7 +21,7 @@ Phase 1 ships independently of Phase 2.
 | Database | Neon Postgres via Drizzle ORM. Conn strings live in this app's local env files (`DATABASE_URL` pooled for runtime, `DATABASE_URL_UNPOOLED` for migrations). |
 | Sessions | Redis (`REDIS_URL` from the same `.env`), TTL-native. |
 | Host / adapter | `@astrojs/node` standalone. The configured custom Neon hostname does not expose Neon's derived HTTP endpoint, so Drizzle uses pooled direct PostgreSQL transport at runtime. |
-| Auth | GitHub OAuth only (`github.com`). Only the GitHub username `soulwax` is authorized as admin. The returned GitHub account email must use a GitHub email suffix (for example GitHub's noreply suffix) before an admin session is created. Hand-rolled sessions remain random-token/httpOnly-cookie based. No public signup. |
+| Auth | GitHub OAuth only (`github.com`). Only the GitHub username `soulwax` is authorized as admin. Hand-rolled sessions remain random-token/httpOnly-cookie based. No public signup. |
 | Editor | Milkdown Crepe (markdown-native WYSIWYG), client-side island, outputs markdown. |
 | Mutations | Astro Actions + middleware guarding `/admin/**`. |
 | Markdown render | `markdown-it` + `@shikijs/markdown-it`, then `sanitize-html`. |
@@ -90,10 +90,9 @@ Mutations (create/update/publish post, logout) are Astro Actions.
 
 1. `/admin/login` starts GitHub OAuth against `github.com`.
 2. OAuth callback exchanges the code, loads the GitHub user profile, and only allows username `soulwax`.
-3. The callback also validates that the returned email uses the configured GitHub email suffix.
-4. On success, upsert the admin user by GitHub id, generate a random token, store `token → userId` in Redis with TTL, and set an httpOnly, SameSite=Lax, Secure cookie.
-5. `middleware.ts` validates the cookie on every `/admin/**` request, loads the user, and exposes it via `Astro.locals`. Unauthenticated → redirect to `/admin/login`.
-6. Logout deletes the Redis key and clears the cookie.
+3. On success, upsert the admin user by GitHub id, generate a random token, store `token → userId` in Redis with TTL, and set an httpOnly, SameSite=Lax, Secure cookie.
+4. `middleware.ts` validates the cookie on every `/admin/**` request, loads the user, and exposes it via `Astro.locals`. Unauthenticated → redirect to `/admin/login`.
+5. Logout deletes the Redis key and clears the cookie.
 
 ### Seed / migration
 
@@ -110,7 +109,7 @@ Image/file uploads & object storage, comments, tags as first-class entities, sch
 ## Testing
 
 - Phase 1: visual verification against the Shisaku mockups (feed, post, header/footer, both themes); build succeeds.
-- Phase 2: unit tests for auth (GitHub profile allowlist, email suffix validation, session create/validate/expire, middleware redirect), post CRUD actions, and markdown render+sanitize; an integration pass covering GitHub login → create post → publish → public render.
+- Phase 2: unit tests for auth (GitHub profile allowlist, session create/validate/expire, middleware redirect), post CRUD actions, and markdown render+sanitize; an integration pass covering GitHub login → create post → publish → public render.
 
 ## Risks / notes
 

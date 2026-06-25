@@ -7,65 +7,61 @@ import {
 } from '../src/lib/auth/github';
 
 test('only the soulwax GitHub account is authorized', () => {
-	assert.equal(
-		isAllowedGitHubIdentity(
-			{ login: 'soulwax' },
-			'soulwax@users.noreply.github.com',
-		),
-		true,
-	);
-	assert.equal(
-		isAllowedGitHubIdentity(
-			{ login: 'someone-else' },
-			'soulwax@users.noreply.github.com',
-		),
-		false,
-	);
+	assert.equal(isAllowedGitHubIdentity({ login: 'soulwax' }), true);
+	assert.equal(isAllowedGitHubIdentity({ login: 'SoulWax' }), true);
+	assert.equal(isAllowedGitHubIdentity({ login: 'someone-else' }), false);
 });
 
-test('GitHub email suffix is required', () => {
-	assert.equal(isAllowedGitHubIdentity({ login: 'soulwax' }, 'soulwax@example.com'), false);
-	assert.equal(isAllowedGitHubIdentity({ login: 'soulwax' }, null), false);
-});
-
-test('stored admin users are checked again before authorization', () => {
-	assert.equal(
-		isAuthorizedAdminUser({
-			username: 'soulwax',
-			email: 'soulwax@users.noreply.github.com',
-			role: 'admin',
-		}),
-		true,
-	);
+test('stored admin users are checked again by username and role', () => {
 	assert.equal(
 		isAuthorizedAdminUser({
 			username: 'soulwax',
 			email: 'soulwax@example.com',
 			role: 'admin',
 		}),
+		true,
+	);
+	assert.equal(
+		isAuthorizedAdminUser({
+			username: 'someone-else',
+			email: 'someone@example.com',
+			role: 'admin',
+		}),
+		false,
+	);
+	assert.equal(
+		isAuthorizedAdminUser({
+			username: 'soulwax',
+			email: 'soulwax@example.com',
+			role: 'editor',
+		}),
 		false,
 	);
 });
 
-test('a verified GitHub noreply address is selected', () => {
+test('the primary verified GitHub email is selected', () => {
 	assert.equal(
 		selectVerifiedGitHubEmail(
 			[
+				{
+					email: 'secondary@example.com',
+					primary: false,
+					verified: true,
+					visibility: null,
+				},
 				{
 					email: 'soulwax@example.com',
 					primary: true,
 					verified: true,
 					visibility: 'private',
 				},
-				{
-					email: 'soulwax@users.noreply.github.com',
-					primary: false,
-					verified: true,
-					visibility: null,
-				},
 			],
 			null,
 		),
-		'soulwax@users.noreply.github.com',
+		'soulwax@example.com',
 	);
+});
+
+test('profile email is used when no verified email is returned', () => {
+	assert.equal(selectVerifiedGitHubEmail([], 'soulwax@example.com'), 'soulwax@example.com');
 });
