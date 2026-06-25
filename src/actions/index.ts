@@ -1,7 +1,8 @@
 import { ActionError, defineAction } from 'astro:actions';
 import { z } from 'zod';
-import { isAuthorizedAdminUser } from '../lib/auth/github';
+import { isAuthenticatedGitHubUser, isAuthorizedAdminUser } from '../lib/auth/github';
 import { deleteSession, SESSION_COOKIE } from '../lib/auth/session';
+import { createComment } from '../lib/comments';
 import {
 	createPost,
 	deletePost,
@@ -22,11 +23,27 @@ const postInput = z.object({
 	pubDate: z.string().min(1),
 });
 
+const commentInput = z.object({
+	postId: z.uuid(),
+	body: z.string().trim().min(1).max(1000),
+});
+
 const requireAdmin = (user: App.Locals['user']) => {
 	if (!user || !isAuthorizedAdminUser(user)) {
 		throw new ActionError({
 			code: 'UNAUTHORIZED',
 			message: 'Admin authentication is required.',
+		});
+	}
+
+	return user;
+};
+
+const requireAuthenticatedGitHubUser = (user: App.Locals['user']) => {
+	if (!user || !isAuthenticatedGitHubUser(user)) {
+		throw new ActionError({
+			code: 'UNAUTHORIZED',
+			message: 'GitHub sign-in is required.',
 		});
 	}
 
@@ -90,6 +107,34 @@ export const server = {
 				requireAdmin(context.locals.user);
 				await deletePost(input.id);
 				return { deleted: true };
+			},
+		}),
+	},
+	comments: {
+		create: defineAction({
+			accept: 'form',
+			input: commentInput,
+			handler: async (input, context) => {
+				const user = requireAuthenticatedGitHubUser(context.locals.user);
+				let comment;
+
+				try {
+					comment = await createComment({
+						postId: input.postId,
+						authorId: user.id,
+						authorUsername: user.username,
+						body: input.body,
+					});
+				} catch {
+					throw new ActionError({
+						code: 'NOT_FOUND',
+						message: 'Post not found.',
+					});
+				}
+
+				return {
+					id: comment.id,
+				};
 			},
 		}),
 	},

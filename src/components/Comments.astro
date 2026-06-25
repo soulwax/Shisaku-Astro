@@ -1,0 +1,88 @@
+---
+import type { Comment, User } from '../db/schema';
+
+interface Props {
+	postId: string;
+	comments: Comment[];
+	user: User | null;
+}
+
+const { postId, comments, user } = Astro.props;
+const signInUrl = `/admin/oauth/github/start?returnTo=${encodeURIComponent(Astro.url.pathname)}`;
+---
+
+<section class="comments" aria-labelledby="comments-title">
+	<div class="comments-head">
+		<div>
+			<div class="prompt">$ comments</div>
+			<h2 id="comments-title">Reader notes</h2>
+		</div>
+		<span>{comments.length} {comments.length === 1 ? 'note' : 'notes'}</span>
+	</div>
+
+	<div class="comment-list">
+		{
+			comments.map((comment) => (
+				<article class="comment">
+					<header>
+						<strong>@{comment.authorUsername}</strong>
+						<time datetime={comment.createdAt.toISOString()}>
+							{comment.createdAt.toISOString().slice(0, 10)}
+						</time>
+					</header>
+					<p>{comment.body}</p>
+				</article>
+			))
+		}
+	</div>
+
+	{comments.length === 0 && <p class="comments-empty">No notes yet.</p>}
+
+	{
+		user ? (
+			<form class="comment-form" data-comment-form>
+				<input type="hidden" name="postId" value={postId} />
+				<label for="comment-body">Comment as @{user.username}</label>
+				<textarea
+					id="comment-body"
+					name="body"
+					rows="4"
+					maxlength="1000"
+					required
+					placeholder="Leave a note"
+				></textarea>
+				<p class="form-error" data-comment-error role="alert" hidden />
+				<button class="button" type="submit">Post comment</button>
+			</form>
+		) : (
+			<div class="comment-login">
+				<p>Sign in with GitHub to leave a note.</p>
+				<a class="button button-quiet" href={signInUrl}>Continue with GitHub</a>
+			</div>
+		)
+	}
+</section>
+
+<script>
+	import { actions } from 'astro:actions';
+
+	const form = document.querySelector<HTMLFormElement>('[data-comment-form]');
+	const errorField = document.querySelector<HTMLElement>('[data-comment-error]');
+
+	form?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		errorField?.setAttribute('hidden', '');
+
+		const result = await actions.comments.create(new FormData(form));
+
+		if (result.error) {
+			if (errorField) {
+				errorField.textContent = result.error.message;
+				errorField.removeAttribute('hidden');
+			}
+			return;
+		}
+
+		window.location.reload();
+	});
+</script>

@@ -17,7 +17,7 @@ export const users = pgTable(
 		githubId: text('github_id').notNull(),
 		username: text('username').notNull(),
 		email: text('email').notNull(),
-		role: text('role').notNull().default('admin'),
+		role: text('role').notNull().default('commenter'),
 		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 		lastLoginAt: timestamp('last_login_at', { withTimezone: true }).notNull().defaultNow(),
 	},
@@ -51,7 +51,27 @@ export const posts = pgTable(
 	],
 );
 
+export const comments = pgTable(
+	'comments',
+	{
+		id: uuid('id').primaryKey().defaultRandom(),
+		postId: uuid('post_id')
+			.notNull()
+			.references(() => posts.id, { onDelete: 'cascade' }),
+		authorId: uuid('author_id').references(() => users.id, { onDelete: 'set null' }),
+		authorUsername: text('author_username').notNull(),
+		body: text('body').notNull(),
+		createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+	},
+	(table) => [
+		index('comments_post_created_at_idx').on(table.postId, table.createdAt),
+		index('comments_author_id_idx').on(table.authorId),
+	],
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
+export type Comment = typeof comments.$inferSelect;
+export type NewComment = typeof comments.$inferInsert;

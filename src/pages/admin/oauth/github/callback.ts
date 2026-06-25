@@ -4,6 +4,7 @@ import { db } from '../../../../db/client';
 import { users } from '../../../../db/schema';
 import {
 	isAllowedGitHubIdentity,
+	roleForGitHubLogin,
 	selectVerifiedGitHubEmail,
 	type GitHubEmail,
 	type GitHubIdentity,
@@ -16,6 +17,7 @@ import {
 import { requireEnv } from '../../../../lib/env';
 
 const OAUTH_STATE_COOKIE = 'shisaku_oauth_state';
+const OAUTH_RETURN_COOKIE = 'shisaku_oauth_return_to';
 
 export const GET: APIRoute = async ({ cookies, redirect, url }) => {
 	const fail = (reason: string) =>
@@ -23,7 +25,9 @@ export const GET: APIRoute = async ({ cookies, redirect, url }) => {
 	const code = url.searchParams.get('code');
 	const state = url.searchParams.get('state');
 	const expectedState = cookies.get(OAUTH_STATE_COOKIE)?.value;
+	const returnTo = cookies.get(OAUTH_RETURN_COOKIE)?.value ?? '/admin';
 	cookies.delete(OAUTH_STATE_COOKIE, { path: '/' });
+	cookies.delete(OAUTH_RETURN_COOKIE, { path: '/' });
 
 	if (!code || !state || !expectedState || state !== expectedState) {
 		return fail('OAuth state validation failed.');
@@ -88,7 +92,7 @@ export const GET: APIRoute = async ({ cookies, redirect, url }) => {
 			githubId: String(identity.id),
 			username: identity.login.toLowerCase(),
 			email,
-			role: 'admin',
+			role: roleForGitHubLogin(identity.login),
 			lastLoginAt: now,
 		})
 		.onConflictDoUpdate({
@@ -96,7 +100,7 @@ export const GET: APIRoute = async ({ cookies, redirect, url }) => {
 			set: {
 				username: identity.login.toLowerCase(),
 				email,
-				role: 'admin',
+				role: roleForGitHubLogin(identity.login),
 				lastLoginAt: now,
 			},
 		})
@@ -121,5 +125,5 @@ export const GET: APIRoute = async ({ cookies, redirect, url }) => {
 	const sessionToken = await createSession(user.id);
 	cookies.set(SESSION_COOKIE, sessionToken, sessionCookieOptions(url));
 
-	return redirect('/admin');
+	return redirect(returnTo);
 };

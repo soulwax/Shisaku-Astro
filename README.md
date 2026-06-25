@@ -41,8 +41,8 @@ Static assets live in `public/`. Published and draft posts live in Neon Postgres
 EchoWarrior devlog entries are retained in `scripts/seed-content/` as migration inputs.
 
 Local environment variables are loaded from `.env.local`, with `.env` as an optional fallback.
-Vercel deployments use encrypted project environment variables. GitHub OAuth is restricted to
-the GitHub account `github.com/soulwax`.
+Vercel deployments use encrypted project environment variables. GitHub OAuth lets readers comment.
+Admin authoring is restricted to the GitHub account `github.com/soulwax`.
 
 The GitHub OAuth app settings should use:
 

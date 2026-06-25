@@ -13,19 +13,26 @@ export interface GitHubEmail {
 	visibility: string | null;
 }
 
-export const isAllowedGitHubIdentity = (
-	identity: Pick<GitHubIdentity, 'login'>,
-): boolean => {
-	return identity.login.toLowerCase() === ADMIN_GITHUB_USERNAME;
-};
+export const isAllowedGitHubIdentity = (identity: Pick<GitHubIdentity, 'login'>): boolean =>
+	identity.login.trim().length > 0;
+
+export const roleForGitHubLogin = (login: string): 'admin' | 'commenter' =>
+	login.toLowerCase() === ADMIN_GITHUB_USERNAME ? 'admin' : 'commenter';
+
+export const isAuthenticatedGitHubUser = (user: {
+	username: string;
+	email: string;
+	role: string;
+}): boolean =>
+	(user.role === 'admin' || user.role === 'commenter') &&
+	isAllowedGitHubIdentity({ login: user.username });
 
 export const isAuthorizedAdminUser = (user: {
 	username: string;
 	email: string;
 	role: string;
 }): boolean =>
-	user.role === 'admin' &&
-	isAllowedGitHubIdentity({ login: user.username });
+	user.role === 'admin' && user.username.toLowerCase() === ADMIN_GITHUB_USERNAME;
 
 export const selectVerifiedGitHubEmail = (
 	emails: GitHubEmail[],

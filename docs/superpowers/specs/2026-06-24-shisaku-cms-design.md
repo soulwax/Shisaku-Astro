@@ -21,13 +21,14 @@ Phase 1 ships independently of Phase 2.
 | Database | Neon Postgres via Drizzle ORM. Conn strings live in this app's local env files (`DATABASE_URL` pooled for runtime, `DATABASE_URL_UNPOOLED` for migrations). |
 | Sessions | Redis (`REDIS_URL` from the same `.env`), TTL-native. |
 | Host / adapter | `@astrojs/node` standalone. The configured custom Neon hostname does not expose Neon's derived HTTP endpoint, so Drizzle uses pooled direct PostgreSQL transport at runtime. |
-| Auth | GitHub OAuth only (`github.com`). Only the GitHub username `soulwax` is authorized as admin. Hand-rolled sessions remain random-token/httpOnly-cookie based. No public signup. |
+| Auth | GitHub OAuth only (`github.com`). Any GitHub user can sign in to comment. Only the GitHub username `soulwax` is authorized for admin authoring. Hand-rolled sessions remain random-token/httpOnly-cookie based. No public signup. |
 | Editor | Milkdown Crepe (markdown-native WYSIWYG), client-side island, outputs markdown. |
 | Mutations | Astro Actions + middleware guarding `/admin/**`. |
 | Markdown render | `markdown-it` + `@shikijs/markdown-it`, then `sanitize-html`. |
 | Existing posts | Migrate the original content files into the DB as seed posts (plain markdown; MDX component features dropped), then retain them under `scripts/seed-content/` for repeatable seeding. |
 | Index page | `/` becomes the feed (per the Shisaku index mockup), not a separate hero landing. |
 | Images | Hero + inline images are URLs only. Upload/object-storage deferred. |
+| Comments | Authenticated GitHub users can leave plain-text comments on published posts. |
 
 ## Phase 1 — Restyle (no backend)
 
@@ -61,8 +62,9 @@ No data changes; posts still load from content collections until Phase 2.
 
 ### Data model (Drizzle / Neon Postgres)
 
-- **`users`** — `id` (uuid, pk), `github_id` (unique), `username` (unique), `email`, `role` (`admin`), `created_at`, `last_login_at`.
+- **`users`** — `id` (uuid, pk), `github_id` (unique), `username` (unique), `email`, `role` (`admin` | `commenter`), `created_at`, `last_login_at`.
 - **`posts`** — `id` (uuid, pk), `slug` (unique), `title`, `description`, `body_markdown`, `hero_image` (text url, nullable), `status` (`draft` | `published`), `pub_date`, `updated_date`, `author_id` → `users`, `created_at`, `updated_at`.
+- **`comments`** — `id` (uuid, pk), `post_id` → `posts`, `author_id` → `users`, `author_username`, `body`, `created_at`.
 
 Sessions live in **Redis** (key = token, value = user id, TTL = session lifetime), not Postgres.
 
@@ -89,10 +91,11 @@ Mutations (create/update/publish post, logout) are Astro Actions.
 ### Auth flow
 
 1. `/admin/login` starts GitHub OAuth against `github.com`.
-2. OAuth callback exchanges the code, loads the GitHub user profile, and only allows username `soulwax`.
-3. On success, upsert the admin user by GitHub id, generate a random token, store `token → userId` in Redis with TTL, and set an httpOnly, SameSite=Lax, Secure cookie.
-4. `middleware.ts` validates the cookie on every `/admin/**` request, loads the user, and exposes it via `Astro.locals`. Unauthenticated → redirect to `/admin/login`.
-5. Logout deletes the Redis key and clears the cookie.
+2. OAuth callback exchanges the code and loads the GitHub user profile.
+3. On success, upsert the user by GitHub id. `soulwax` receives `admin`; everyone else receives `commenter`.
+4. Generate a random token, store `token → userId` in Redis with TTL, and set an httpOnly, SameSite=Lax, Secure cookie.
+5. `middleware.ts` validates the cookie on every request, loads the user, and exposes it via `Astro.locals`. Protected `/admin/**` routes require `soulwax` admin; commenters can post comments on published articles.
+6. Logout deletes the Redis key and clears the cookie.
 
 ### Seed / migration
 
@@ -104,7 +107,7 @@ An idempotent script reads `scripts/seed-content/*.{md,mdx}`, parses frontmatter
 
 ## Out of scope (deferred enhancements)
 
-Image/file uploads & object storage, comments, tags as first-class entities, scheduled publishing, full-text search, password reset/email flows.
+Image/file uploads & object storage, tags as first-class entities, scheduled publishing, full-text search, password reset/email flows.
 
 ## Testing
 

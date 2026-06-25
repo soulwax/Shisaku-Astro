@@ -28,7 +28,7 @@ const { title, description = 'Manage shisaku devlog posts.' } = Astro.props;
 				<nav class="admin-nav" aria-label="Admin">
 					<a href="/admin">posts</a>
 					<a href="/admin/posts/new">new post</a>
-					<form data-logout-form>
+					<form data-admin-logout-form>
 						<button class="button button-quiet" type="submit">log out</button>
 					</form>
 				</nav>
@@ -39,7 +39,7 @@ const { title, description = 'Manage shisaku devlog posts.' } = Astro.props;
 		<script>
 			import { actions } from 'astro:actions';
 
-			const form = document.querySelector<HTMLFormElement>('[data-logout-form]');
+			const form = document.querySelector<HTMLFormElement>('[data-admin-logout-form]');
 			form?.addEventListener('submit', async (event) => {
 				event.preventDefault();
 				await actions.auth.logout(new FormData());

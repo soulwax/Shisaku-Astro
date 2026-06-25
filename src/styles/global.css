@@ -156,7 +156,8 @@ nav.site-nav a:hover {
 	background: var(--elev);
 }
 
-.toggle {
+.toggle,
+.header-icon-button {
 	appearance: none;
 	margin-left: 4px;
 	border: 1px solid var(--border-strong);
@@ -170,11 +171,13 @@ nav.site-nav a:hover {
 	place-items: center;
 	transition: border-color 0.15s, color 0.15s, background 0.25s;
 }
-.toggle:hover {
+.toggle:hover,
+.header-icon-button:hover {
 	border-color: var(--primary);
 	color: var(--link);
 }
-.toggle .ico {
+.toggle .ico,
+.header-icon-button .ico {
 	width: 16px;
 	height: 16px;
 }
@@ -189,6 +192,76 @@ html[data-theme="light"] .toggle .sun {
 }
 html[data-theme="light"] .toggle .moon {
 	display: block;
+}
+
+.auth-dialog {
+	width: min(420px, calc(100vw - 36px));
+	border: 1px solid var(--border-strong);
+	border-radius: 8px;
+	background: var(--surface);
+	color: var(--text);
+	box-shadow: var(--shadow);
+	padding: 0;
+}
+.auth-dialog::backdrop {
+	background: rgba(0, 0, 0, 0.45);
+	backdrop-filter: blur(2px);
+}
+.auth-dialog-head,
+.auth-dialog-body,
+.auth-dialog-actions {
+	display: flex;
+	gap: 16px;
+}
+.auth-dialog-head {
+	align-items: flex-start;
+	justify-content: space-between;
+	border-bottom: 1px solid var(--border);
+	padding: 18px 20px;
+}
+.auth-dialog-head h2 {
+	font-family: var(--mono);
+	font-size: 18px;
+	margin: 6px 0 0;
+}
+.auth-dialog-body {
+	flex-direction: column;
+	padding: 20px;
+}
+.auth-dialog-body p {
+	margin: 0;
+	color: var(--secondary);
+}
+.auth-dialog-actions {
+	align-items: center;
+	flex-wrap: wrap;
+}
+.auth-dialog-actions form {
+	margin: 0;
+}
+.auth-account {
+	font-family: var(--mono);
+	color: var(--text) !important;
+}
+.dialog-close {
+	appearance: none;
+	border: 1px solid var(--border-strong);
+	background: var(--surface);
+	color: var(--secondary);
+	width: 32px;
+	height: 32px;
+	border-radius: 7px;
+	display: grid;
+	place-items: center;
+	cursor: pointer;
+}
+.dialog-close:hover {
+	color: var(--link);
+	border-color: var(--primary);
+}
+.dialog-close svg {
+	width: 16px;
+	height: 16px;
 }
 
 /* ---------- terminal prompt ---------- */
@@ -664,6 +737,116 @@ html[data-theme="light"] .post-body pre .str {
 	font-style: normal;
 }
 
+/* ===================== COMMENTS ===================== */
+.comments {
+	border-top: 1px solid var(--border);
+	margin-top: 46px;
+	padding-top: 28px;
+}
+.comments-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 20px;
+}
+.comments-head h2 {
+	font-family: var(--mono);
+	font-size: 20px;
+	line-height: 1.25;
+	margin: 6px 0 0;
+}
+.comments-head > span {
+	font-family: var(--mono);
+	font-size: 12px;
+	color: var(--muted);
+	white-space: nowrap;
+	margin-top: 4px;
+}
+.comment-list {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+.comment {
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--surface);
+	padding: 16px 18px;
+}
+.comment header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	font-family: var(--mono);
+	font-size: 12px;
+	margin-bottom: 10px;
+}
+.comment strong {
+	color: var(--accent-strong);
+	font-weight: 600;
+}
+.comment time,
+.comments-empty,
+.comment-login p,
+.comment-form label {
+	color: var(--muted);
+}
+.comment p {
+	margin: 0;
+	white-space: pre-wrap;
+}
+.comments-empty {
+	font-family: var(--mono);
+	font-size: 12.5px;
+	margin: 0 0 18px;
+}
+.comment-login,
+.comment-form {
+	margin-top: 22px;
+}
+.comment-login {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 14px;
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	background: var(--surface);
+	padding: 16px 18px;
+}
+.comment-login p {
+	margin: 0;
+}
+.comment-form {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+.comment-form label {
+	font-family: var(--mono);
+	font-size: 12px;
+}
+.comment-form textarea {
+	width: 100%;
+	resize: vertical;
+	border: 1px solid var(--border-strong);
+	border-radius: 7px;
+	background: var(--surface);
+	color: var(--text);
+	font: inherit;
+	padding: 10px 12px;
+	outline: none;
+}
+.comment-form textarea:focus {
+	border-color: var(--primary);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+.comment-form .button {
+	align-self: flex-start;
+}
+
 /* ===================== ADMIN ===================== */
 .admin-wrap {
 	max-width: 1080px;
@@ -920,6 +1103,10 @@ html[data-theme="light"] .button-danger {
 	}
 	.row-actions {
 		width: 100%;
+	}
+	.comment-login {
+		align-items: flex-start;
+		flex-direction: column;
 	}
 }
 

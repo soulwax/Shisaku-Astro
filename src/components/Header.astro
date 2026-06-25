@@ -1,5 +1,10 @@
 ---
+import { isAuthorizedAdminUser } from '../lib/auth/github';
 import { SITE_TITLE } from '../consts';
+
+const user = Astro.locals.user;
+const isAdmin = user ? isAuthorizedAdminUser(user) : false;
+const signInUrl = `/admin/oauth/github/start?returnTo=${encodeURIComponent(Astro.url.pathname)}`;
 ---
 
 <header class="site-head">
@@ -15,6 +20,24 @@ import { SITE_TITLE } from '../consts';
 				<a href="/about">about</a>
 				<a href="/rss.xml">rss</a>
 			</span>
+			<button
+				class="header-icon-button"
+				id="authDialogBtn"
+				aria-label={user ? `Open account menu for @${user.username}` : 'Sign in with GitHub'}
+				title={user ? `@${user.username}` : 'Sign in with GitHub'}
+				type="button"
+			>
+				<svg
+					class="ico"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+					aria-hidden="true"
+				>
+					<path
+						d="M12 .5A12 12 0 0 0 8.2 23.9c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.3.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.2.9 2.4v3.6c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"
+					></path>
+				</svg>
+			</button>
 			<button class="toggle" id="themeBtn" aria-label="Toggle dark mode" title="Toggle theme">
 				<svg
 					class="ico moon"
@@ -48,6 +71,47 @@ import { SITE_TITLE } from '../consts';
 	</div>
 </header>
 
+<dialog class="auth-dialog" id="authDialog" aria-labelledby="authDialogTitle">
+	<div class="auth-dialog-head">
+		<div>
+			<div class="prompt">$ auth github</div>
+			<h2 id="authDialogTitle">{user ? 'Author account' : 'Author sign in'}</h2>
+		</div>
+		<button class="dialog-close" type="button" data-auth-dialog-close aria-label="Close">
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M18 6 6 18M6 6l12 12"></path>
+			</svg>
+		</button>
+	</div>
+	{
+		user ? (
+			<div class="auth-dialog-body">
+				<p class="auth-account">@{user.username}</p>
+				{!isAdmin && <p>You're signed in for comments.</p>}
+				<div class="auth-dialog-actions">
+					{isAdmin && <a class="button" href="/admin">Open dashboard</a>}
+					<form data-header-logout-form>
+						<button class="button button-quiet" type="submit">Log out</button>
+					</form>
+				</div>
+			</div>
+		) : (
+			<div class="auth-dialog-body">
+				<p>Sign in with GitHub to comment on devlog entries.</p>
+				<a class="button" href={signInUrl}>Continue with GitHub</a>
+			</div>
+		)
+	}
+</dialog>
+
 <script is:inline>
 	(function () {
 		var KEY = 'shisaku-theme';
@@ -65,4 +129,36 @@ import { SITE_TITLE } from '../consts';
 			});
 		}
 	})();
+</script>
+
+<script>
+	import { actions } from 'astro:actions';
+
+	const dialog = document.getElementById('authDialog') as HTMLDialogElement | null;
+	const openButton = document.getElementById('authDialogBtn');
+	const closeButton = dialog?.querySelector<HTMLButtonElement>('[data-auth-dialog-close]');
+	const logoutForm = dialog?.querySelector<HTMLFormElement>('[data-header-logout-form]');
+
+	openButton?.addEventListener('click', () => {
+		if (dialog?.showModal) {
+			dialog.showModal();
+			return;
+		}
+
+		window.location.href = '/admin/login';
+	});
+
+	closeButton?.addEventListener('click', () => dialog?.close());
+
+	dialog?.addEventListener('click', (event) => {
+		if (event.target === dialog) {
+			dialog.close();
+		}
+	});
+
+	logoutForm?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		await actions.auth.logout(new FormData());
+		window.location.href = '/';
+	});
 </script>

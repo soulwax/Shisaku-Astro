@@ -2,17 +2,25 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
 	isAllowedGitHubIdentity,
+	isAuthenticatedGitHubUser,
 	isAuthorizedAdminUser,
+	roleForGitHubLogin,
 	selectVerifiedGitHubEmail,
 } from '../src/lib/auth/github';
 
-test('only the soulwax GitHub account is authorized', () => {
+test('any non-empty GitHub login can authenticate', () => {
 	assert.equal(isAllowedGitHubIdentity({ login: 'soulwax' }), true);
-	assert.equal(isAllowedGitHubIdentity({ login: 'SoulWax' }), true);
-	assert.equal(isAllowedGitHubIdentity({ login: 'someone-else' }), false);
+	assert.equal(isAllowedGitHubIdentity({ login: 'someone-else' }), true);
+	assert.equal(isAllowedGitHubIdentity({ login: '' }), false);
 });
 
-test('stored admin users are checked again by username and role', () => {
+test('soulwax is assigned admin and other users become commenters', () => {
+	assert.equal(roleForGitHubLogin('soulwax'), 'admin');
+	assert.equal(roleForGitHubLogin('SoulWax'), 'admin');
+	assert.equal(roleForGitHubLogin('someone-else'), 'commenter');
+});
+
+test('only soulwax admin users can access admin authoring', () => {
 	assert.equal(
 		isAuthorizedAdminUser({
 			username: 'soulwax',
@@ -33,6 +41,33 @@ test('stored admin users are checked again by username and role', () => {
 		isAuthorizedAdminUser({
 			username: 'soulwax',
 			email: 'soulwax@example.com',
+			role: 'commenter',
+		}),
+		false,
+	);
+});
+
+test('admin and commenter roles are valid signed-in GitHub users', () => {
+	assert.equal(
+		isAuthenticatedGitHubUser({
+			username: 'soulwax',
+			email: 'soulwax@example.com',
+			role: 'admin',
+		}),
+		true,
+	);
+	assert.equal(
+		isAuthenticatedGitHubUser({
+			username: 'someone-else',
+			email: 'someone@example.com',
+			role: 'commenter',
+		}),
+		true,
+	);
+	assert.equal(
+		isAuthenticatedGitHubUser({
+			username: 'someone-else',
+			email: 'someone@example.com',
 			role: 'editor',
 		}),
 		false,
