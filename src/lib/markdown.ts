@@ -13,12 +13,19 @@ const createRenderer = async () => {
 
 	renderer.use(
 		await markdownItShiki({
-			langs: ['bash', 'css', 'html', 'javascript', 'json', 'lua', 'markdown', 'rust', 'toml', 'typescript', 'yaml'],
+			langs: ['bash', 'c', 'cpp', 'css', 'html', 'javascript', 'json', 'lua', 'markdown', 'rust', 'toml', 'typescript', 'yaml'],
 			themes: {
 				light: 'github-light',
 				dark: 'github-dark',
 			},
 			defaultColor: false,
+			// Any fenced block tagged with a language we did not preload renders as
+			// plain text instead of throwing (which would surface as a 500). 'text'
+			// is Shiki's no-grammar special language (the documented default for
+			// defaultLanguage); its option type is too narrow to include the literal.
+			// See tests/markdown.test.ts.
+			// @ts-expect-error - 'text' is a valid Shiki special language at runtime.
+			fallbackLanguage: 'text',
 		}),
 	);
 
